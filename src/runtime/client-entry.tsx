@@ -10,3 +10,7 @@ function renderInBrowser() {
 }
 
 renderInBrowser()
+
+/**
+ * 客户端入口
+ */

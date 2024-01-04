@@ -1,6 +1,8 @@
 import cac from 'cac'
 import path = require('path');
 import { createDevServer } from './dev';
+import { build } from './build';
+import { resolve } from 'path';
 
 // 创建 cli 实例，并自动生成 help 信息
 const cli = cac('easypress').version('0.0.1').help();
@@ -19,6 +21,13 @@ cli.command('dev [root]', 'start dev server').alias("dev").action(async (root: s
 // 生产构建
 cli.command('build [root]', 'build in production').action(async (root: string) => {
   console.log('build', root);
+  try {
+    root = resolve(root)
+    // 注册 build 的逻辑
+    await build(root)
+  } catch (e) {
+    console.log(e)
+  }
 })
 
 // 调用 cli
