@@ -1,6 +1,6 @@
 import { join } from "path";
 
-export const PACKAGE_ROOT = join(__dirname, "..", "..", "..");
+export const PACKAGE_ROOT = join(__dirname, "..");
 
 // 主题模板地址
 export const DEFAULT_HTML_PATH = join(PACKAGE_ROOT, "template.html");

@@ -1,9 +1,11 @@
 import pluginReact from '@vitejs/plugin-react';
 import { build as viteBuild, InlineConfig } from 'vite';
-import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from "./constants";
 import { join } from 'path';
-import * as fs from "fs-extra";
+import fs from "fs-extra";
 import type { RollupOutput } from 'rollup'
+import ora from 'ora'
+import { pathToFileURL } from 'url';
+import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from "./constants";
 
 /**
  * 打包逻辑
@@ -30,7 +32,8 @@ export async function bundle(root: string) {
     },
   })
 
-  console.log('>>>log: Building client + server bundles...');
+  const spinner = ora();
+  spinner.start('Building client + server bundles...'); // ora：加载动画
 
   try {
     // * Promise.all 并发优化
@@ -40,6 +43,7 @@ export async function bundle(root: string) {
       // server build
       viteBuild(resolveViteConfig(true)),
     ]);
+    spinner.stop()
     return [clientBundle, serverBundle] as [RollupOutput, RollupOutput];
   } catch (err) {
     console.log(err);
@@ -91,12 +95,9 @@ export async function renderPage(
 export async function build(root: string = process.cwd()) {
   // 1. 打包代码，包括 client 端 + server 端
   const [clientBundle, serverBundle] = await bundle(root);
-  debugger;
   // 2. 引入 server-entry 入口模块
   const serverEntryPath = join(root, ".temp", "ssr-entry.js");
-  
   // 3. 服务端渲染，产出
-  const { render } = require(serverEntryPath);
-  
+  const { render } = (await import(pathToFileURL(serverEntryPath).toString()));
   await renderPage(render, root, clientBundle);
 }

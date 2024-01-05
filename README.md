@@ -10,17 +10,17 @@ A static site generator for the modern web
 
 ## Run
 ```
-pnpm run start
+pnpm run dev
 ```
 
 ## Preview
 ```
-epress dev docs
+pnpm run preview
 ```
 
 ## Build
 ```
-epress build docs
+pnpm run build
 ```
 
 ## License
