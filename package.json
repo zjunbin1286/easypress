@@ -8,7 +8,10 @@
     "dev": "tsup --watch",
     "build": "tsup",
     "preview": "cd build && serve .",
-    "lint": "eslint --fix --ext .ts,.tsx,.js,.jsx ./"
+    "lint": "eslint --fix --ext .ts,.tsx,.js,.jsx ./",
+    "test:unit": "vitest --ui",
+    "prepare:e2e": "tsx scripts/prepare-e2e.ts",
+    "test:e2e": "playwright test"
   },
   "bin": {
     "epress": "bin/easypress.js"
@@ -24,21 +27,25 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.4",
     "@commitlint/config-conventional": "^18.4.4",
+    "@playwright/test": "1.26.1",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.10.6",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
+    "@vitest/ui": "^0.25.2",
     "commitlint": "^18.4.4",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "execa": "5.1.1",
     "husky": "8.0.2",
     "lint-staged": "^15.2.0",
     "rollup": "^3.29.4",
     "serve": "^14.0.1",
     "tsup": "^6.7.0",
+    "tsx": "3.12.1",
     "typescript": "^5.3.3"
   },
   "dependencies": {
@@ -51,6 +58,7 @@
     "prettier": "^3.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "vite": "^3.2.1"
+    "vite": "^3.2.1",
+    "vitest": "0.25.2"
   }
 }
