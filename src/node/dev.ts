@@ -1,6 +1,6 @@
-import { createServer as createViteDevServer } from "vite";
-import { pluginIndexHtml } from "./plugin-easypress/indexHtml";
-import pluginReact from '@vitejs/plugin-react'
+import { createServer as createViteDevServer } from 'vite';
+import { pluginIndexHtml } from './plugin-easypress/indexHtml';
+import pluginReact from '@vitejs/plugin-react';
 
 export async function createDevServer(root = process.cwd()) {
   // 创建 server

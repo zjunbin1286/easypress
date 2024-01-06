@@ -6,7 +6,6 @@ export function render() {
   return renderToString(<App />);
 }
 
-
 /**
  * 服务端入口
  */
