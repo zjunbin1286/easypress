@@ -13,8 +13,6 @@ cli
   .command('dev [root]', 'start dev server')
   .alias('dev')
   .action(async (root: string) => {
-    console.log(root);
-
     root = root ? path.resolve(root) : process.cwd();
     const server = await createDevServer(root); // 调用
     await server.listen(); // 监听
