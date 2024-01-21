@@ -9,7 +9,7 @@
     "build": "tsup",
     "preview": "cd build && serve .",
     "lint": "eslint --fix --ext .ts,.tsx,.js,.jsx ./",
-    "test:unit": "vitest --ui",
+    "test:unit": "vitest run",
     "prepare:e2e": "tsx scripts/prepare-e2e.ts",
     "test:e2e": "playwright test"
   },
@@ -49,10 +49,12 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@loadable/component": "5.15.2",
     "@vitejs/plugin-react": "^2.2.0",
     "cac": "^6.7.14",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.2",
+    "fast-glob": "3.2.12",
     "fs-extra": "^10.1.0",
     "ora": "^6.1.2",
     "prettier": "^3.1.1",

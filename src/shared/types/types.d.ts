@@ -4,3 +4,8 @@ declare module 'easypress:site-data' {
   const siteData: UserConfig;
   export default siteData;
 }
+
+declare module 'easypress:routes' {
+  import type { Route } from 'node/plugin-routes';
+  export const routes: Route[];
+}
