@@ -1,4 +1,4 @@
-import { createServer as createViteDevServer } from 'vite';
+import { createServer } from 'vite';
 import { pluginIndexHtml } from './plugin-easypress/indexHtml';
 import pluginReact from '@vitejs/plugin-react';
 import { PACKAGE_ROOT } from './constants';
@@ -11,12 +11,13 @@ export async function createDevServer(
 ) {
   // 获取配置文件
   const config = await resolveConfig(root, 'serve', 'development');
-  console.log(config.siteData);
+  // console.log(config.siteData);
 
   // 创建 server
-  return createViteDevServer({
+  return createServer({
     // root: 命令参数（ep dev docs 中的 docs）
-    root,
+    // 将传给 Vite 的 root 参数指定为项目的根目录，让约定式路由生效
+    root: PACKAGE_ROOT,
     // 注册插件
     plugins: [pluginIndexHtml(), pluginReact(), pluginConfig(config, restart)],
     server: {

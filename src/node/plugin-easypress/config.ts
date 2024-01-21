@@ -1,7 +1,7 @@
 import { Plugin } from 'vite';
+import { join, relative } from 'path';
 import { SiteConfig } from 'shared/types/index';
-import { relative } from 'path';
-
+import { PACKAGE_ROOT } from '../../node/constants';
 // 虚拟模块标识
 const SITE_DATA_ID = 'easypress:site-data';
 
@@ -13,7 +13,7 @@ const SITE_DATA_ID = 'easypress:site-data';
  */
 export function pluginConfig(
   config: SiteConfig,
-  restartServer: () => Promise<void>
+  restartServer?: () => Promise<void>
 ): Plugin {
   return {
     name: 'easypress:site-data',
@@ -46,6 +46,18 @@ export function pluginConfig(
         // 手动调用 dev.ts 中的 createServer，然后每次 import 新的产物
         await restartServer();
       }
+    },
+    // 新增插件钩子，config 钩子可以让我们自定义 Vite 配置，因此，我们之前指定的 root 参数也可以放到这个钩子中。
+    config() {
+      return {
+        // root: PACKAGE_ROOT,
+        resolve: {
+          // 导入别名
+          alias: {
+            '@runtime': join(PACKAGE_ROOT, 'src', 'runtime', 'index.ts')
+          }
+        }
+      };
     }
   };
 }

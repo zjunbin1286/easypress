@@ -1,27 +1,34 @@
 import pluginReact from '@vitejs/plugin-react';
 import { build as viteBuild, InlineConfig } from 'vite';
-import { join } from 'path';
+import path, { join } from 'path';
 import fs from 'fs-extra';
 import type { RollupOutput } from 'rollup';
-import ora from 'ora';
+// import ora from 'ora';
 import { pathToFileURL } from 'url';
 import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from './constants';
+import { SiteConfig } from 'shared/types';
+import { pluginConfig } from './plugin-easypress/config';
 
 /**
  * 打包逻辑
  * @param root 路径
  * @returns
  */
-export async function bundle(root: string) {
+export async function bundle(root: string, config: SiteConfig) {
   // * 公用配置抽离
   const resolveViteConfig = (isServer: boolean): InlineConfig => ({
     mode: 'production', // 生产环境构建
     root, // 根目录
     // 注意加上这个插件，自动注入 import React from 'react'，避免 React is not defined 的错误
-    plugins: [pluginReact()],
+    plugins: [pluginReact(), pluginConfig(config)],
+    ssr: {
+      // 注意加上这个配置，防止 cjs 产物中 require ESM 的产物，因为 react-router-dom 的产物为 ESM 格式
+      noExternal: ['react-router-dom']
+    },
     build: {
+      minify: false,
       ssr: isServer,
-      outDir: isServer ? '.temp' : 'build', // 输出产物目录
+      outDir: isServer ? path.join(root, '.temp') : 'build', // 输出产物目录
       rollupOptions: {
         input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH, // 打包入口
         output: {
@@ -31,8 +38,8 @@ export async function bundle(root: string) {
     }
   });
 
-  const spinner = ora();
-  spinner.start('Building client + server bundles...'); // ora：加载动画
+  // const spinner = ora();
+  // spinner.start('Building client + server bundles...'); // ora：加载动画
 
   try {
     // * Promise.all 并发优化
@@ -42,7 +49,6 @@ export async function bundle(root: string) {
       // server build
       viteBuild(resolveViteConfig(true))
     ]);
-    spinner.stop();
     return [clientBundle, serverBundle] as [RollupOutput, RollupOutput];
   } catch (err) {
     console.log(err);
@@ -91,13 +97,17 @@ export async function renderPage(
  * 打包构建函数
  * @param root 根路径
  */
-export async function build(root: string = process.cwd()) {
+export async function build(root: string = process.cwd(), config: SiteConfig) {
   // 1. 打包代码，包括 client 端 + server 端
   // const [clientBundle, serverBundle] = await bundle(root);
-  const [clientBundle] = await bundle(root);
+  const [clientBundle] = await bundle(root, config);
   // 2. 引入 server-entry 入口模块
   const serverEntryPath = join(root, '.temp', 'ssr-entry.js');
   // 3. 服务端渲染，产出
   const { render } = await import(pathToFileURL(serverEntryPath).toString());
-  await renderPage(render, root, clientBundle);
+  try {
+    await renderPage(render, root, clientBundle);
+  } catch (e) {
+    console.log('Render page error.\n', e);
+  }
 }

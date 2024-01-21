@@ -1,6 +1,7 @@
 import cac from 'cac';
 import { build } from './build';
 import { resolve } from 'path';
+import { resolveConfig } from './config';
 
 // 创建 cli 实例，并自动生成 help 信息
 const cli = cac('easypress').version('0.0.1').help();
@@ -29,8 +30,12 @@ cli
   .action(async (root: string) => {
     try {
       root = resolve(root);
+      // 取出配置文件
+      const config = await resolveConfig(root, 'build', 'production');
+      // console.log('取出配置文件', config);
+
       // 注册 build 的逻辑
-      await build(root);
+      await build(root, config);
     } catch (e) {
       console.log(e);
     }

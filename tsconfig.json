@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
+    "module": "ESNext",
     "outDir": "dist",
-    "target": "ESNext" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "module": "commonjs" /* Specify what module code is generated. */,
-    "rootDir": "." /* Specify the root folder within your source files. */,
+    "rootDir": ".",
+    "baseUrl": "src",
+    "target": "ESNext",
     "jsx": "react-jsx",
-    "esModuleInterop": true, // 解决类型报错问题，在 ESM 语法中导入 CJS 模块时通常需要加上这个配置
-    "baseUrl": "src"
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "paths": {
+      "shared/*": ["shared/*"],
+      "@runtime": ["runtime/index.ts"],
+    },
   },
-  "exclude": ["tsup.config.ts"]
+  "include": ["e2e/**/*.ts", "src/**/*"],
 }
