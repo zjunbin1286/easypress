@@ -42,11 +42,15 @@
     "execa": "5.1.1",
     "husky": "8.0.2",
     "lint-staged": "^15.2.0",
+    "rehype-stringify": "^10.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.0",
     "rollup": "^3.29.4",
     "serve": "^14.0.1",
     "tsup": "^6.7.0",
     "tsx": "3.12.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "unified": "^11.0.4"
   },
   "dependencies": {
     "@loadable/component": "5.15.2",
