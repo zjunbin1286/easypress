@@ -24,8 +24,17 @@ module.exports = {
     'prettier/prettier': 'error',
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
+    'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
-    'react/react-in-jsx-scope': 'off'
+    'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
+    'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
+    '@typescript-eslint/no-namespace': 'off',
+    'padding-line-between-statements': 'error',
+    'import/newline-after-import': 'off',
+    'react/no-unknown-property': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn',
+    'import/newline-after-import': 'off',
+    'no-debugger': 'off'
   },
   settings: {
     // Eslint 就会自动探测 React 的版本号

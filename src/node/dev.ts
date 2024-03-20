@@ -13,7 +13,7 @@ export async function createDevServer(
   // 创建 server
   return createServer({
     // 注册插件
-    plugins: createVitePlugins(config, restartServer),
+    plugins: await createVitePlugins(config, restartServer),
     server: {
       fs: {
         allow: [PACKAGE_ROOT] // 项目根目录下的文件都是合法的
