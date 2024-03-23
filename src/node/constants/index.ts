@@ -20,3 +20,5 @@ export const SERVER_ENTRY_PATH = join(
   'runtime',
   'ssr-entry.tsx'
 );
+
+export const MD_REGEX = /\.mdx?$/;
