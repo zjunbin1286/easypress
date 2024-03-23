@@ -2,10 +2,11 @@ import { App } from './App';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
 
-// 将组件代码渲染为 HTML 字符串
-export function render() {
+// For ssr component render
+// 增加路由传参
+export function render(pagePath: string) {
   return renderToString(
-    <StaticRouter location={'/guide'}>
+    <StaticRouter location={pagePath}>
       <App />
     </StaticRouter>
   );
@@ -14,3 +15,6 @@ export function render() {
 /**
  * 服务端入口
  */
+
+// 导出路由数据
+export { routes } from 'easypress:routes';

@@ -1,5 +1,5 @@
 import { build as viteBuild, InlineConfig } from 'vite';
-import path, { join } from 'path';
+import path, { dirname, join } from 'path';
 import fs from 'fs-extra';
 import type { RollupOutput } from 'rollup';
 // import ora from 'ora';
@@ -7,6 +7,7 @@ import { pathToFileURL } from 'url';
 import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from './constants';
 import { SiteConfig } from 'shared/types';
 import { createVitePlugins } from './vitePlugins';
+import { Route } from './plugin-routes';
 
 /**
  * 打包逻辑
@@ -20,7 +21,7 @@ export async function bundle(root: string, config: SiteConfig) {
   ): Promise<InlineConfig> => ({
     mode: 'production', // 生产环境构建
     root, // 根目录
-    plugins: await createVitePlugins(config),
+    plugins: await createVitePlugins(config, undefined, isServer),
     ssr: {
       // 注意加上这个配置，防止 cjs 产物中 require ESM 的产物，因为 react-router-dom 的产物为 ESM 格式
       noExternal: ['react-router-dom']
@@ -28,7 +29,7 @@ export async function bundle(root: string, config: SiteConfig) {
     build: {
       minify: false,
       ssr: isServer,
-      outDir: isServer ? path.join(root, '.temp') : 'build', // 输出产物目录
+      outDir: isServer ? path.join(root, '.temp') : path.join(root, 'build'), // 输出产物目录
       rollupOptions: {
         input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH, // 打包入口
         output: {
@@ -62,18 +63,22 @@ export async function bundle(root: string, config: SiteConfig) {
  * @param clientBundle 客户端包
  */
 export async function renderPage(
-  render: () => string,
+  render: (pagePath: string) => string,
   root: string,
-  clientBundle: RollupOutput
+  clientBundle: RollupOutput,
+  routes: Route[]
 ) {
   // 获取客户端JS脚本
   const clientChunk = clientBundle.output.find(
     (chunk) => chunk.type === 'chunk' && chunk.isEntry
   );
   console.log('Rendering page in server side...');
-  // 获取ssr渲染的字符串
-  const appHtml = render();
-  const html = `
+  return Promise.all(
+    routes.map(async (route) => {
+      const routePath = route.path;
+      // 获取ssr渲染的字符串
+      const appHtml = render(routePath);
+      const html = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -88,9 +93,14 @@ export async function renderPage(
       </body>
     </html>
   `.trim();
-  await fs.ensureDir(join(root, 'build'));
-  await fs.writeFile(join(root, 'build/index.html'), html);
-  await fs.remove(join(root, '.temp'));
+      const fileName = routePath.endsWith('/')
+        ? `${routePath}index.html`
+        : `${routePath}.html`;
+      await fs.ensureDir(join(root, 'build', dirname(fileName)));
+      await fs.writeFile(join(root, 'build', fileName), html);
+      await fs.remove(join(root, '.temp'));
+    })
+  );
 }
 
 /**
@@ -104,9 +114,11 @@ export async function build(root: string = process.cwd(), config: SiteConfig) {
   // 2. 引入 server-entry 入口模块
   const serverEntryPath = join(root, '.temp', 'ssr-entry.js');
   // 3. 服务端渲染，产出
-  const { render } = await import(pathToFileURL(serverEntryPath).toString());
+  const { render, routes } = await import(
+    pathToFileURL(serverEntryPath).toString()
+  );
   try {
-    await renderPage(render, root, clientBundle);
+    await renderPage(render, root, clientBundle, routes);
   } catch (e) {
     console.log('Render page error.\n', e);
   }
