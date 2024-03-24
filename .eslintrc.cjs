@@ -34,7 +34,7 @@ module.exports = {
     'react/no-unknown-property': 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
     'import/newline-after-import': 'off',
-    'no-debugger': 'off'
+    'no-debugger': 'off',
   },
   settings: {
     // Eslint 就会自动探测 React 的版本号
