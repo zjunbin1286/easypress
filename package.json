@@ -14,7 +14,7 @@
     "test:e2e": "playwright test"
   },
   "bin": {
-    "epress": "bin/easypress.js"
+    "easy": "bin/easypress.js"
   },
   "lint-staged": {
     "**/*.{js,jsx,tsx,ts}": [
