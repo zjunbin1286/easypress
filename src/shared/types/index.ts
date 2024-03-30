@@ -1,4 +1,5 @@
 import { UserConfig as ViteConfiguration } from 'vite';
+import { ComponentType } from 'react';
 
 export type NavItemWithLink = {
   text: string;
@@ -42,4 +43,34 @@ export interface SiteConfig {
   root: string; // 项目根目录
   configPath: string; // 配置文件路径
   siteData: UserConfig; // 站点数据
+}
+
+export type PageType = 'home' | 'doc' | 'custom' | '404';
+
+export interface Header {
+  id: string;
+  text: string;
+  depth: number;
+}
+
+export interface FrontMatter {
+  title?: string;
+  description?: string;
+  pageType?: PageType;
+  sidebar?: boolean;
+  outline?: boolean;
+}
+
+export interface PageData {
+  siteData: UserConfig;
+  pagePath: string;
+  frontmatter: FrontMatter;
+  pageType: PageType;
+  toc?: Header[];
+}
+
+export interface PageModule {
+  default: ComponentType;
+  frontmatter?: FrontMatter;
+  [key: string]: unknown;
 }

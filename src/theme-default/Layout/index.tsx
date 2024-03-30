@@ -1,26 +1,26 @@
-import { Content } from '@runtime';
+import { usePageData } from '../../runtime';
 import 'uno.css';
 
 export function Layout() {
+  const pageData = usePageData();
+  console.log('pageData', pageData);
+
+  // 获取 pageType
+  const { pageType } = pageData;
+  // 根据 pageType 分发不同的页面内容
+  const getContent = () => {
+    if (pageType === 'home') {
+      return <div>Home 页面</div>;
+    } else if (pageType === 'doc') {
+      return <div>正文页面</div>;
+    } else {
+      return <div>404 页面</div>;
+    }
+  };
   return (
     <div>
-      <h1 p="2" m="4" className="fill-sky-300">
-        Common Content
-      </h1>
-      <button
-        p="y-2 x-4"
-        font="semibold"
-        shadow="lg"
-        text="white"
-        bg="sky-500 hover:sky-600"
-        border="rounded-lg none"
-        cursor="pointer"
-        transition="all"
-      >
-        Unocss
-      </button>
-      <h1>Doc Content</h1>
-      <Content />
+      <div>Nav</div>
+      <div>{getContent()}</div>
     </div>
   );
 }
