@@ -1,6 +1,7 @@
 import styles from './index.module.scss';
 import { NavItemWithLink } from 'shared/types';
 import { usePageData } from '@runtime';
+import { SwitchAppearance } from '../SwitchAppearance';
 
 export function MenuItem(item: NavItemWithLink) {
   return (
@@ -15,7 +16,7 @@ export function MenuItem(item: NavItemWithLink) {
 export function Nav() {
   const { siteData } = usePageData();
   const nav = siteData.themeConfig.nav || [];
-  console.log(nav);
+  // console.log(nav);
 
   return (
     <header fixed="~" pos="t-0 l-0" w="full" shadow="#ccc">
@@ -23,7 +24,6 @@ export function Nav() {
         flex="~"
         items="center"
         justify="between"
-        // divider-bottom 为自定义规则，后续会介绍
         className="px-8 h-14 divider-bottom"
       >
         <div>
@@ -44,10 +44,15 @@ export function Nav() {
           </div>
 
           {/* 白天/夜间模式切换 */}
-          {/* 下一节课介绍 */}
-
+          <div flex="~" before="menu-item-before">
+            <SwitchAppearance />
+          </div>
           {/* 相关链接 */}
-          <div className={styles.socialLinkIcon} ml="2">
+          <div
+            className={styles.socialLinkIcon}
+            before="menu-item-before"
+            ml="2"
+          >
             <a href="/" rel="noreferrer">
               <div className="i-carbon-logo-github w-5 h-5 fill-current"></div>
             </a>
