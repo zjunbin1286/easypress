@@ -1,9 +1,11 @@
 import { Plugin } from 'vite';
-import { join, relative } from 'path';
+import path, { join, relative } from 'path';
+import sirv from 'sirv';
 import { SiteConfig } from 'shared/types/index';
-import { PACKAGE_ROOT } from '../../node/constants';
+import { PACKAGE_ROOT, PUBLIC_DIR } from '../../node/constants';
 // 虚拟模块标识
 const SITE_DATA_ID = 'easypress:site-data';
+import fs from 'fs';
 
 /**
  * 插件功能：让前端 UI 层也能访问到配置的数据
@@ -63,6 +65,10 @@ export function pluginConfig(
           }
         }
       };
+    },
+    configureServer(server) {
+      const publicDir = join(config.root, PUBLIC_DIR);
+      server.middlewares.use(sirv(publicDir));
     }
   };
 }

@@ -6,7 +6,7 @@
  * instead because those are "Theme (light or dark)" dependant.
  * -------------------------------------------------------------------------- */
 
-:root {
+ :root {
   --island-c-white: #ffffff;
   --island-c-white-soft: #f9f9f9;
   --island-c-white-mute: #f1f1f1;
@@ -328,9 +328,11 @@
 
 :root {
   --island-home-hero-name-color: transparent;
-  --island-home-hero-name-background: -webkit-linear-gradient(120deg,
-      var(--island-c-brand) 30%,
-      #41d1ff);
+  --island-home-hero-name-background: -webkit-linear-gradient(
+    120deg,
+    var(--island-c-brand) 30%,
+    #41d1ff
+  );
 
   --island-home-hero-image-background-image: none;
   --island-home-hero-image-filter: none;
