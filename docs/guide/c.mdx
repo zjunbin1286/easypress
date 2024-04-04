@@ -1,0 +1,84 @@
+# 手写 bind 方法
+
+## 1. 函数作用
+
+调用函数，可传入参数，改变this指向，返回一个函数可传入参数调用得到结果
+
+## 2. 总体步骤
+
+1. 边界判断（this, context）
+2. 将调用的函数设置为对象（传入的context）的方法（改变this指向）
+3. 返回一个函数
+4. 函数里面：处理参数，调用函数，返回结果
+
+## 3. 详细步骤
+**1. 边界判断**
+  *  判断当前 `this` 是否为一个函数，否则返回错误消息
+  *  判断是否传入 `context` 参数，存在则使用 `Object()` 转换为对象赋给 `context`，否则将 `window` 赋值给 `context`
+
+**2. 将调用的函数设置为对象（传入的context）的方法（改变this指向）**
+
+**3. 返回一个函数**
+  * 处理参数
+  * 调用函数，得到结果
+  * 删除 `context` 身上的 `fn` 函数
+  * 返回结果
+
+## 4. 代码实现
+```js
+/**
+ * !实现 binBind() 方法
+ * @param {*} context 绑定的对象
+ * @param  {...any} args 剩余参数
+ * @returns 
+ */
+Function.prototype.binBind = function(context, ...args) {
+  if (typeof this !== 'function') return console.error('Error');
+  context = (context!==null && context!==undefined) ? Object(context) : window
+
+  context.fn = this // 这一步不能放在返回的函数里面
+
+  // 返回一个函数
+  return function Fn(...args2) {
+    // 处理参数，调用函数，返回结果
+    const newArr = [...args, ...args2]
+    const result = context.fn(...newArr)
+    delete context.fn
+    return result
+  }
+}
+```
+
+## 5. 测试代码
+```js
+// 测试
+function sum(num1, num2) {
+  console.log(num1, num2, this);
+}
+
+// 原生的 bind() 方法
+const Fn = sum.bind({ name: 'bin' }, 1)
+Fn(2)
+
+// 自定义的 binBind() 方法
+const Fn1 = sum.binBind({ name: 'bin' }, 1)
+Fn1(2)
+```
+
+## 6. 细节解析
+
+1. 原生 `bind()` 方法是返回一个函数，所以，这个手写的函数必须也得返回一个函数
+2. 改变 `this` 指向那一步，不能放在返回的函数中，因为函数中的 `this` 指向 `widow`;
+2. `this` 指向的就是调用 `binApply()` 的那个函数（隐式绑定）；
+3. 传入的 `context` 参数表示：将 `this` 的指向改为这个参数；
+4. 改变 `this` 指向其实就是在 `context` 上添加一个临时的方法，值为 `this`；
+5. 调用 `context.fn()` 时，就已经改变了 `this` 的指向，同时得使用展开运算符传入参数
+6. `delete context.fn` 删除那个临时方法是因为已经不需要用了
+
+## 7. 核心原理
+
+通过在传入的对象上，临时新增一个方法，这个方法的值是当前 `binBind` 的调用者。然后在返回的函数当中 `context.fn(...argArray)` 调用这个函数，通过隐式绑定的方式改变了 `this` 的指向，最得到结果并返回
+***
+>每文一句：非静无以成学。
+
+本次的分享就到这里，希望大家都能够有所收获。有任何疑问都可以在评论区留言，大家一起探讨、进步！
