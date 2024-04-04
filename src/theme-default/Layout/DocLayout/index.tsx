@@ -3,10 +3,11 @@ import { useLocation } from 'react-router-dom';
 import { Sidebar } from '../../components/Sidebar/index';
 import styles from './index.module.scss';
 import { DocFooter } from '../../components/DocFooter/index';
+import { Aside } from '../../components/Aside/index';
 
 export function DocLayout() {
   // 获取页面数据
-  const { siteData } = usePageData();
+  const { siteData, toc } = usePageData();
   const sidebarData = siteData.themeConfig?.sidebar || {};
 
   // 获取当前路由地址
@@ -25,12 +26,15 @@ export function DocLayout() {
   return (
     <div>
       <Sidebar sidebarData={matchedSidebar} pathname={pathname} />
-      <div className={styles.content}>
-        <div>
+      <div className={styles.content} flex="~">
+        <div className={styles.docContent}>
           <div className="island-doc">
             <Content />
           </div>
           <DocFooter />
+        </div>
+        <div className={styles.asideContainer}>
+          <Aside headers={toc} />
         </div>
       </div>
     </div>
