@@ -9,7 +9,7 @@ import { DocLayout } from './DocLayout';
 
 export function Layout() {
   const pageData = usePageData();
-  console.log('pageData', pageData);
+  // console.log('pageData', pageData);
 
   // 获取 pageType
   const { pageType } = pageData;
