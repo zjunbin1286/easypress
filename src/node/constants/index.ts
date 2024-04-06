@@ -24,3 +24,5 @@ export const SERVER_ENTRY_PATH = join(
 export const MD_REGEX = /\.mdx?$/;
 
 export const PUBLIC_DIR = 'public';
+
+export const MASK_SPLITTER = '!!ISLAND!!';
