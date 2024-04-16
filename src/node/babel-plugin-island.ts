@@ -7,13 +7,11 @@ import { normalizePath } from 'vite';
 
 export default declare((api) => {
   api.assertVersion(7);
-  // 核心逻辑实现
   const visitor: Visitor<PluginPass> = {
-    // 引入分两种情况：<A __island>、<A.B __island>
-    // 访问 JSX 开始标签
+    // <A __island>
+    // <A.B __island>
     JSXOpeningElement(path, state) {
       const name = path.node.name;
-      // 拿到组件名字，如 Aside
       let bindingName = '';
       if (name.type === 'JSXIdentifier') {
         bindingName = name.name;
@@ -23,20 +21,15 @@ export default declare((api) => {
         while (t.isJSXMemberExpression(object)) {
           object = object.object;
         }
-        // 取出 A
         bindingName = object.name;
       } else {
-        // 其它 type 忽略
         return;
       }
-      // 根据作用域信息拿到组件引入的位置
+
       const binding = path.scope.getBinding(bindingName);
-      // debugger;
 
       if (binding?.path.parent.type === 'ImportDeclaration') {
-        // 定位到 import 语句之后，我们拿到 Island 组件对应的引入路径
         const source = binding.path.parent.source;
-        // 然后将 __island prop 进行修改
         const attributes = (path.container as t.JSXElement).openingElement
           .attributes;
         for (let i = 0; i < attributes.length; i++) {

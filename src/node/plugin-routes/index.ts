@@ -29,7 +29,6 @@ export function pluginRoutes(options: PluginOptions): Plugin {
   return {
     name: 'easypress:routes',
     async configResolved() {
-      // Vite 启动时，对 RouteService 进行初始化
       await routeService.init();
     },
     resolveId(id: string) {
@@ -40,7 +39,7 @@ export function pluginRoutes(options: PluginOptions): Plugin {
 
     load(id: string) {
       if (id === '\0' + CONVENTIONAL_ROUTE_ID) {
-        return routeService.generateRoutesCode(options.isSSR || false);
+        return routeService.generateRoutesCode(options.isSSR);
       }
     }
   };

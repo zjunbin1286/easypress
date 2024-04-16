@@ -1,11 +1,10 @@
 import { Plugin } from 'vite';
-import path, { join, relative } from 'path';
+import { join, relative } from 'path';
 import sirv from 'sirv';
 import { SiteConfig } from 'shared/types/index';
-import { PACKAGE_ROOT, PUBLIC_DIR } from '../../node/constants';
+import { PACKAGE_ROOT } from '../../node/constants';
 // 虚拟模块标识
 const SITE_DATA_ID = 'easypress:site-data';
-import fs from 'fs';
 
 /**
  * 插件功能：让前端 UI 层也能访问到配置的数据
@@ -52,9 +51,8 @@ export function pluginConfig(
     // 新增插件钩子，config 钩子可以让我们自定义 Vite 配置，因此，我们之前指定的 root 参数也可以放到这个钩子中。
     config() {
       return {
-        // root: PACKAGE_ROOT,
+        root: PACKAGE_ROOT,
         resolve: {
-          // 导入别名
           alias: {
             '@runtime': join(PACKAGE_ROOT, 'src', 'runtime', 'index.ts')
           }
@@ -67,7 +65,7 @@ export function pluginConfig(
       };
     },
     configureServer(server) {
-      const publicDir = join(config.root, PUBLIC_DIR);
+      const publicDir = join(config.root, 'public');
       server.middlewares.use(sirv(publicDir));
     }
   };
