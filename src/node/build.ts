@@ -1,8 +1,8 @@
+/* eslint-disable prettier/prettier */
 import { build as viteBuild, InlineConfig } from 'vite';
 import path, { dirname, join } from 'path';
 import fs from 'fs-extra';
 import type { RollupOutput } from 'rollup';
-// import ora from 'ora';
 import { pathToFileURL } from 'url';
 import {
   CLIENT_ENTRY_PATH,
@@ -13,6 +13,8 @@ import { SiteConfig } from 'shared/types';
 import { createVitePlugins } from './vitePlugins';
 import { Route } from './plugin-routes';
 import { RenderResult } from 'runtime/ssr-entry';
+
+const CLIENT_OUTPUT = 'build';
 
 /**
  * 打包逻辑
@@ -33,7 +35,7 @@ export async function bundle(root: string, config: SiteConfig) {
     build: {
       minify: false,
       ssr: isServer,
-      outDir: isServer ? path.join(root, '.temp') : path.join(root, 'build'),
+      outDir: isServer ? path.join(root, '.temp') : path.join(root, CLIENT_OUTPUT),
       rollupOptions: {
         input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
         output: {
@@ -53,6 +55,10 @@ export async function bundle(root: string, config: SiteConfig) {
       // server build
       viteBuild(await resolveViteConfig(true))
     ]);
+    const publicDir = join(root, 'public');
+    if (fs.pathExistsSync(publicDir)) {
+      await fs.copy(publicDir, join(root, CLIENT_OUTPUT));
+    }
     return [clientBundle, serverBundle] as [RollupOutput, RollupOutput];
   } catch (err) {
     console.log(err);
@@ -146,8 +152,15 @@ export async function renderPage(
     routes.map(async (route) => {
       const routePath = route.path;
       // 获取ssr渲染的字符串
-      const { appHtml, islandToPathMap, propsData } = await render(routePath);
-      await buildIslands(root, islandToPathMap);
+      const { appHtml, islandToPathMap, propsData = [] } = await render(routePath);
+
+      const styleAssets = clientBundle.output.filter(
+        (chunk) => chunk.type === 'asset' && chunk.fileName.endsWith('.css')
+      );
+
+      const islandBundle = await buildIslands(root, islandToPathMap);
+      const islandsCode = (islandBundle as RollupOutput).output[0].code;
+
       const html = `
     <!DOCTYPE html>
     <html>
@@ -156,10 +169,15 @@ export async function renderPage(
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>title</title>
         <meta name="description" content="xxx">
+         ${styleAssets
+          .map((item) => `<link rel="stylesheet" href="/${item.fileName}">`)
+          .join('\n')}
       </head>
       <body>
         <div id="root">${appHtml}</div>
+        <script type="module">${islandsCode}</script>
         <script type="module" src="/${clientChunk?.fileName}"></script>
+        <script id="island-props">${JSON.stringify(propsData)}</script>
       </body>
     </html>`.trim();
       const fileName = routePath.endsWith('/')
