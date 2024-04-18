@@ -7,6 +7,7 @@ import '../styles/doc.css';
 import { Nav } from '../components/Nav';
 import { HomeLayout } from './HomeLayout/index';
 import { DocLayout } from './DocLayout';
+import { NotFoundLayout } from './NotFoundLayout';
 
 export function Layout() {
   const pageData = usePageData();
@@ -21,7 +22,7 @@ export function Layout() {
     } else if (pageType === 'doc') {
       return <DocLayout />;
     } else {
-      return <div>404 页面</div>;
+      return <NotFoundLayout />;
     }
   };
   return (

@@ -2,6 +2,7 @@ import cac from 'cac';
 import { build } from './build';
 import { resolve } from 'path';
 import { resolveConfig } from './config';
+import { preview } from './preview';
 
 // 创建 cli 实例，并自动生成 help 信息
 const cli = cac('easypress').version('0.0.1').help();
@@ -36,6 +37,18 @@ cli
 
       // 注册 build 的逻辑
       await build(root, config);
+    } catch (e) {
+      console.log(e);
+    }
+  });
+
+cli
+  .command('preview [root]', 'preview production build')
+  .option('--port <port>', 'port to use for preview server')
+  .action(async (root: string, { port }: { port: number }) => {
+    try {
+      root = resolve(root);
+      await preview(root, { port });
     } catch (e) {
       console.log(e);
     }

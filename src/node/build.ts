@@ -158,7 +158,9 @@ export async function renderPage(
     (chunk) => chunk.type === 'chunk' && chunk.isEntry
   );
   return Promise.all(
-    routes.map(async (route) => {
+    [...routes, {
+      path: '/404'
+    }].map(async (route) => {
       const routePath = route.path;
       const helmetContext = {
         context: {}
