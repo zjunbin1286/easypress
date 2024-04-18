@@ -5,7 +5,7 @@ import { DataContext } from './hooks';
 
 export interface RenderResult {
   appHtml: string;
-  propsData: unknown[];
+  islandProps: unknown[];
   islandToPathMap: Record<string, string>;
 }
 
@@ -15,7 +15,6 @@ export async function render(pagePath: string) {
   const pageData = await initPageData(pagePath);
   // 在每次渲染页面之前清空了上一次渲染遗留的数据，解决了不同页面间数据污染的问题
   const { clearIslandData, data } = await import('./jsx-runtime');
-  const { islandProps, islandToPathMap } = data;
   clearIslandData();
   const appHtml = renderToString(
     <DataContext.Provider value={pageData}>
@@ -24,6 +23,7 @@ export async function render(pagePath: string) {
       </StaticRouter>
     </DataContext.Provider>
   );
+  const { islandProps, islandToPathMap } = data;
   return {
     appHtml,
     islandProps,

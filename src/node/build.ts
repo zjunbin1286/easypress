@@ -6,7 +6,9 @@ import type { RollupOutput } from 'rollup';
 import { pathToFileURL } from 'url';
 import {
   CLIENT_ENTRY_PATH,
+  EXTERNALS,
   MASK_SPLITTER,
+  PACKAGE_ROOT,
   SERVER_ENTRY_PATH
 } from './constants';
 import { SiteConfig } from 'shared/types';
@@ -40,7 +42,8 @@ export async function bundle(root: string, config: SiteConfig) {
         input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
         output: {
           format: isServer ? 'cjs' : 'esm'
-        }
+        },
+        external: EXTERNALS
       }
     }
   });
@@ -59,6 +62,7 @@ export async function bundle(root: string, config: SiteConfig) {
     if (fs.pathExistsSync(publicDir)) {
       await fs.copy(publicDir, join(root, CLIENT_OUTPUT));
     }
+    await fs.copy(join(PACKAGE_ROOT, 'vendors'), join(root, CLIENT_OUTPUT));
     return [clientBundle, serverBundle] as [RollupOutput, RollupOutput];
   } catch (err) {
     console.log(err);
@@ -91,11 +95,15 @@ async function buildIslands(
   const injectId = 'island:inject';
   return viteBuild({
     mode: 'production',
+    esbuild: {
+      jsx: 'automatic'
+    },
     build: {
       // 输出目录
       outDir: path.join(root, '.temp'),
       rollupOptions: {
-        input: injectId
+        input: injectId,
+        external: EXTERNALS
       }
     },
     plugins: [
@@ -152,7 +160,7 @@ export async function renderPage(
     routes.map(async (route) => {
       const routePath = route.path;
       // 获取ssr渲染的字符串
-      const { appHtml, islandToPathMap, propsData = [] } = await render(routePath);
+      const { appHtml, islandToPathMap, islandProps = [] } = await render(routePath);
 
       const styleAssets = clientBundle.output.filter(
         (chunk) => chunk.type === 'asset' && chunk.fileName.endsWith('.css')
@@ -160,6 +168,8 @@ export async function renderPage(
 
       const islandBundle = await buildIslands(root, islandToPathMap);
       const islandsCode = (islandBundle as RollupOutput).output[0].code;
+
+      const normalizeVendorFilename = (fileName: string) => fileName.replace(/\//g, '_') + '.js';
 
       const html = `
     <!DOCTYPE html>
@@ -172,12 +182,21 @@ export async function renderPage(
          ${styleAssets
           .map((item) => `<link rel="stylesheet" href="/${item.fileName}">`)
           .join('\n')}
+        <script type="importmap">
+        {
+          "imports": {
+            ${EXTERNALS.map(
+            (name) => `"${name}": "/${normalizeVendorFilename(name)}"`
+          ).join(',')}
+          }
+        }
+      </script>
       </head>
       <body>
         <div id="root">${appHtml}</div>
         <script type="module">${islandsCode}</script>
         <script type="module" src="/${clientChunk?.fileName}"></script>
-        <script id="island-props">${JSON.stringify(propsData)}</script>
+        <script id="island-props">${JSON.stringify(islandProps)}</script>
       </body>
     </html>`.trim();
       const fileName = routePath.endsWith('/')
