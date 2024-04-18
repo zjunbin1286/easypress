@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { usePageData } from '../../runtime';
 import 'uno.css';
 import '../styles/base.css';
@@ -12,7 +13,7 @@ export function Layout() {
   // console.log('pageData', pageData);
 
   // 获取 pageType
-  const { pageType } = pageData;
+  const { pageType, title } = pageData;
   // 根据 pageType 分发不同的页面内容
   const getContent = () => {
     if (pageType === 'home') {
@@ -25,6 +26,9 @@ export function Layout() {
   };
   return (
     <div>
+      <Helmet>
+        <title>{title}</title>
+      </Helmet>
       <Nav />
       <section
         style={{
