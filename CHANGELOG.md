@@ -1,6 +1,15 @@
 ## [1.0.2](https://github.com/zjunbin1286/easypress/compare/v1.0.1...v1.0.2) (2024-04-19)
 
 
+### Features
+
+* v1.0.2 ([60efb3c](https://github.com/zjunbin1286/easypress/commit/60efb3ceee71b5f19a2bb729644eea3055b5ed5c))
+
+
+
+## [1.0.2](https://github.com/zjunbin1286/easypress/compare/v1.0.1...v1.0.2) (2024-04-19)
+
+
 
 ## 1.0.1 (2024-04-19)
 
