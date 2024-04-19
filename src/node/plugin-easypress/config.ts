@@ -3,6 +3,8 @@ import { join, relative } from 'path';
 import sirv from 'sirv';
 import { SiteConfig } from 'shared/types/index';
 import { PACKAGE_ROOT } from '../../node/constants';
+import fs from 'fs-extra';
+
 // 虚拟模块标识
 const SITE_DATA_ID = 'easypress:site-data';
 
@@ -66,7 +68,9 @@ export function pluginConfig(
     },
     configureServer(server) {
       const publicDir = join(config.root, 'public');
-      server.middlewares.use(sirv(publicDir));
+      if (fs.existsSync(publicDir)) {
+        server.middlewares.use(sirv(publicDir));
+      }
     }
   };
 }

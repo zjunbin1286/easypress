@@ -91,6 +91,8 @@ describe('Markdown compile cases', async () => {
           \\"depth\\": 4
         }
       ];
+
+      export const title = 'h1';
       "
     `);
   });
