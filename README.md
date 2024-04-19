@@ -13,15 +13,8 @@ A static site generator for the modern web
 pnpm run dev
 ```
 
-## Preview
-```
-pnpm run preview
-```
-
-## Build
-```
-pnpm run build
-```
+## Changelog
+Detailed changes for each release are documented in the [CHANGELOG](https://github.com/zjunbin1286/easypress/blob/main/CHANGELOG.md).
 
 ## License
 [MIT](https://github.com/zjunbin1286/easypress/blob/dev/LICENSE)
