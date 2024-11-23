@@ -13,6 +13,11 @@ A static site generator for the modern web
 pnpm run dev
 ```
 
+## Privew
+```
+pnpm run preview
+```
+
 ## Changelog
 Detailed changes for each release are documented in the [CHANGELOG](https://github.com/zjunbin1286/easypress/blob/main/CHANGELOG.md).
 
